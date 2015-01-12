@@ -1,0 +1,256 @@
+.TH man 1 "MONTH YEAR" "VERSION" "firejail man page"
+.SH NAME
+Firejail \- Linux namespaces sandbox program
+.SH SYNOPSIS
+firejail [options] [program and arguments]
+.SH DESCRIPTION
+Firejail is a SUID sandbox program that reduces the risk of security breaches by
+restricting the running environment of untrusted applications using Linux
+namespaces. It includes a sandbox profile for Mozilla Firefox.
+
+Firejail also expands the restricted shell facility found in bash by adding Linux
+namespace support. It supports sandboxing specific users upon
+login.
+.SH USAGE
+Without any options, the sandbox consists of a filesystem chroot build from the
+current system directories mounted read-only, and new PID and IPC namespaces.
+If no program is specified as an argument, /bin/bash is started by default in the sandbox.
+.SH OPTIONS
+.TP
+\fB\--bind=dirname1,dirname2
+Mount-bind dirname1 on top of dirname2. This option is only available when running as root.
+.TP
+\fB\--bind=filename1,filename2
+Mount-bind filename1 on top of filename2. This option is only available when running as root.
+.TP
+\fB\--blacklist=dirname_or_filename
+Blacklist directory or file.
+.TP
+\fB\-c
+Execute command and exit.
+.TP
+\fB\--caps
+Enable Linux capabilities filter
+.TP
+\fB\--chroot=dirname
+Chroot into dirname directory.
+.TP
+\fB\--csh
+Use /bin/csh as default user shell.
+.TP
+\fB\--debug\fR
+Print debug messages.
+.TP
+\fB\--debug-caps
+Print capabilities for the current session and exit.
+.TP
+\fB\--debug-syscalls
+Print all recognized system calls in the current Firejail software build and exit.
+.TP
+\fB\--defaultgw=address
+Use this address as default gateway in the new network namespace.
+.TP
+\fB\-?\fR, \fB\-\-help\fR
+Print options end exit.
+.TP
+\fB\--ip=address
+Use this IP address in the new network namespace.
+.TP
+\fB\--ipc-namespace
+Enable  a new IPC namespace if the sandbox was started as a regular user. IPC namespace is enabled by default only if
+the sandbox is started as root.
+.TP
+\fB\--join=name
+Join the sandbox started using --name option.
+.TP
+\fB\--join=pid
+Join the sandbox specified by pid. Use --list option to get a list of all active sandboxes.
+.TP
+\fB\--list
+List all sandboxes.
+.TP
+\fB\--name=name
+Set sandbox hostname.
+.TP
+\fB\--net=bridgename
+Enable a new network namespace and connect it to this bridge device.
+Unless specified with option --ip and --defaultgw, an IP address and a default gateway will be assigned
+automatically to the sandbox. The IP address is checked using ARP before assignment. The IP address
+assigned as default gateway is the bridge device IP address. Up to four --net
+bridge devices can be defined.
+.TP
+\fB\--noip
+No IP address and no default gateway are configured in the new network namespace. Use this option
+in case you intend to start a DHCP client in the sandbox.
+.TP
+\fB\--net=none
+Enable a new, unconnected network namespace.
+.TP
+\fB\--overlay
+Mount a filesystem overlay on top of the current filesystem. OverlayFS support is required in Linux kernel
+for this option to work.
+.TP
+\fB\--private
+Mount new /root and /home/user directories.
+.TP
+\fB\--private=directory
+Use directory as user home.
+.TP
+\fB\--profile=filename
+Use a custom profile, see below.
+.TP
+\fB\--read-only=dirname_or_filename
+Set directory or file read-only.
+.TP
+\fB\--rlimit-fsize=number
+Set the maximum file size that can be created by a process.
+.TP
+\fB\--rlimit-nofile=number
+Set the maximum number of files that can be opened by a process.
+.TP
+\fB\--rlimit-nproc=number
+Set the maximum number of processes that can be created for the real user ID of the calling process.
+.TP
+\fB\--rlimit-sigpending=number
+Set the maximum number of pending signals for a process.
+.TP
+\fB\--seccomp
+Enable seccomp filter and disable the syscalls in the default list. The default list is as follows:
+mount, umount2, ptrace, kexec_load, open_by_handle_at, init_module, finit_module, delete_module,
+iopl, ioperm, swapon, swapoff and syslog.
+.TP
+\fB\--seccomp=syscall,syscall,syscall
+Enable seccomp filter, apply the default list and the syscalls specified by the command.
+.TP
+\fB\--shell=program
+Set default user shell. Use this shell to run the application using -c shell option.
+For example "firejail --shell=/bin/dash firefox" will start Mozilla Firefox as "/bin/dash -c firefox".
+By default Bash shell (/bin/bash) is used. Options such as --zsh and --csh can also set the default
+shell.
+.TP
+\fB\--shutdown=name
+Shutdown the sandbox started using --name option.
+.TP
+\fB\--shutdown=pid
+Shutdown the sandbox specified by pid. Use --list option to get a list of all active sandboxes.
+.TP
+\fB\--tmpfs=dirname
+Mount a tmpfs filesystem on directory dirname.
+.TP
+\fB\--top
+Monitor the most CPU-intensive sandboxes.
+.TP
+\fB\--trace
+Trace open, access and connect system calls.
+.TP
+\fB\--tree
+Print a tree of all sandboxed processes.
+.TP
+\fB\--version
+Print program version and exit.
+.TP
+\fB\--zsh
+Use /usr/bin/zsh as default user shell.
+
+.SH MONITORING
+Option --list prints a list of all sandboxe. The format
+for each process entry is as follows:
+
+	PID:USER:Command
+
+Option --tree prints the tree of processes running in the sandbox. The format
+for each process entry is as follows:
+
+	PID:USER:Command
+
+Option --top is similar to the UNIX top command, however it applies only to
+sandboxes. Listed below are the available fields (columns) in alphabetical
+order:
+
+.TP
+Command
+Command used to start the sandbox.
+.TP
+CPU%
+CPU usage, the sandbox share of the elapsed CPU time since the
+last screen update
+.TP
+PID
+Unique process ID for the task controlling the sandbox.
+.TP
+Prcs
+Number of processes running in sandbox, including the controlling process.
+.TP
+RES
+Resident Memory Size (KiB), sandbox non-swapped physical memory.
+It is a sum of the RES values for all processes running in the sandbox.
+.TP
+SHR
+Shared Memory Size (KiB), it reflects memory shared with other
+processes. It is a sum of the SHR values for all processes running
+in the sandbox, including the controlling process.
+.TP
+Uptime
+Sandbox running time in hours:minutes:seconds format.
+.TP
+User
+The owner of the sandbox.
+
+
+.SH PROFILES
+Several command line configuration options can be passed to the program using
+profile files. Default Firejail profile files are stored in /etc/firejail
+directory, user profile files are stored in ~/.config/firejail directory. See
+man 5 firejail-profile for more information.
+	
+	
+.SH RESTRICTED SHELL
+To configure a restricted shell, replace /bin/bash with /usr/bin/firejail in
+/etc/password file for each user that needs to be restricted. Alternatively,
+you can specify /usr/bin/firejail  in adduser command:
+
+adduser --shell /usr/bin/firejail username
+
+Additional arguments passed to firejail executable upon login are declared in /etc/firejail/login.users file.
+
+.SH EXAMPLES
+.TP
+\f\firejail
+Start a regular /bin/bash session in sandbox.
+.TP
+\f\firejail firefox
+Start Mozilla Firefox.
+.TP
+\f\firejail --seccomp firefox
+Start Mozilla Firefox in a seccomp sandbox.
+.TP
+\f\firejail --caps firefox
+Start Mozilla Firefox in a Linux capabilities sandbox.
+.TP
+\f\firejail --debug firefox
+Debug Firefox sandbox.
+.TP
+\f\firejail --private
+Start a /bin/bash session with a new tmpfs home directory.
+.TP
+\f\firejail --net=br0 ip=10.10.20.10
+Start a /bin/bash session in a new network namespace. The session is
+connected to the main network using br0 bridge device. An IP address
+of 10.10.20.10 is assigned to the sandbox.
+.TP
+\f\firejail --net=br0 --net=br1 --net=br2
+Start a /bin/bash session in a new network namespace and connect it
+to br0, br1, and br2 host bridge devices.
+.TP
+\f\firejail --list
+List all sandboxed processes.
+.SH LICENSE
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+.PP
+Homepage: http://firejail.sourceforge.net
+.SH SEE ALSO
+\&\flfiremon\fR\|(1),
+\&\flfirejail-profile\fR\|(5)
+
+
+

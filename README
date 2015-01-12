@@ -1,0 +1,11 @@
+Firejail  is  a  SUID sandbox program that reduces the risk of security
+breaches by restricting the running environment of  untrusted  applications
+using Linux namespaces. It includes a sandbox profile for Mozilla Firefox.
+
+Firejail also expands the restricted shell facility found  in  bash  by adding 
+Linux  namespace support. It supports sandboxing specific users upon login.
+
+Download: http://sourceforge.net/projects/firejail/files/
+Build and install: ./configure && make && sudo make install
+Documentation and support: http://firejail.sourceforge.net
+

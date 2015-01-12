@@ -1,0 +1,12 @@
+/etc/firejail/evince.profile
+/etc/firejail/disable-secret.inc
+/etc/firejail/chromium.profile
+/etc/firejail/midori.profile
+/etc/firejail/iceweasel.profile
+/etc/firejail/dropbox.profile
+/etc/firejail/login.users
+/etc/firejail/chromium-browser.profile
+/etc/firejail/disable-mgmt.inc
+/etc/firejail/firefox.profile
+/etc/firejail/transmission-gtk.profile
+/etc/firejail/transmission-qt.profile
