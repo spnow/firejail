@@ -59,6 +59,7 @@ int arg_rlimit_nofile = 0;			// rlimit nofile
 int arg_rlimit_nproc = 0;			// rlimit nproc
 int arg_rlimit_fsize = 0;				// rlimit fsize
 int arg_rlimit_sigpending = 0;			// rlimit fsize
+char *arg_join_name = NULL;
 
 int fds[2];					// parent-child communication pipe
 char *fullargv[MAX_ARGS];			// expanded argv for restricted shell
@@ -371,14 +372,7 @@ int main(int argc, char **argv) {
 		}
 		else if (strncmp(argv[i], "--join=", 7) == 0) {
 			logargs(argc, argv);
-
-			pid_t pid;
-			if (read_pid(argv[i] + 7, &pid) == 0)		
-				join(pid, cfg.homedir);
-			else
-				join_name(argv[i] + 7, cfg.homedir);
-			// it will never get here!!!
-			exit(0);
+			arg_join_name = argv[i] + 7;
 		}
 		else if (strncmp(argv[i], "--shutdown=", 11) == 0) {
 			logargs(argc, argv);
@@ -696,7 +690,7 @@ int main(int argc, char **argv) {
 			ptr += strlen(ptr);
 		}
 	}
-	
+
 	// load the profile
 	{
 		assert(cfg.command_name);
@@ -717,6 +711,17 @@ int main(int argc, char **argv) {
 			custom_profile = 1;
 		}
 	}
+
+	if (arg_join_name != NULL) {
+		// join existing sandbox and launch command
+		pid_t pid;
+		if (read_pid(arg_join_name, &pid) == 0)
+			join(pid, cfg.homedir, cfg.command_line);
+		else
+			join_name(arg_join_name, cfg.homedir, cfg.command_line);
+		// it will never get here!!!
+		exit(0);
+	} 
 
 	// check and assign an IP address
 	if (any_bridge_configured()) {

@@ -70,7 +70,7 @@ static extract_caps_seccomp(pid_t pid) {
 	free(file);
 }
 
-void join_name(const char *name, const char *homedir) {
+void join_name(const char *name, const char *homedir, const char *command) {
 	if (!name || strlen(name) == 0) {
 		fprintf(stderr, "Error: invalid sandbox name\n");
 		exit(1);
@@ -81,10 +81,10 @@ void join_name(const char *name, const char *homedir) {
 		exit(1);
 	}
 
-	join(pid, homedir);
+	join(pid, homedir, command);
 }
 
-void join(pid_t pid, const char *homedir) {
+void join(pid_t pid, const char *homedir, const char *command) {
 	// if the pid is that of a firejail  process, use the pid of a child process inside the sandbox
 	char *comm = pid_proc_comm(pid);
 	if (comm) {
@@ -179,8 +179,28 @@ void join(pid_t pid, const char *homedir) {
 		if (setenv("PROMPT_COMMAND", "export PS1=\"\\[\\e[1;32m\\][\\u@\\h \\W]\\$\\[\\e[0m\\] \"", 1) < 0)
 			errExit("setenv");
 
-		// replace the process with a regular bash session
-		execlp("/bin/bash", "/bin/bash", NULL);
+		// set the shell
+		char *sh;
+		if (cfg.shell)
+ 			sh = cfg.shell;
+		else if (arg_zsh)
+			sh = "/usr/bin/zsh";
+		else if (arg_csh)
+			sh = "/bin/csh";
+		else
+			sh = "/bin/bash";
+		
+		char *arg[4];
+		arg[0] = sh;
+		arg[1] = "-c";
+		assert(cfg.command_line);
+		if (arg_debug)
+			printf("Starting %s\n", cfg.command_line);
+		arg[2] = cfg.command_line;
+		arg[3] = NULL;
+
+		// launch command
+		execvp(sh, arg);
 		// it will never get here!!!
 	}
 

@@ -1,12 +1,10 @@
 # Object files
 *.o
-*.ko
 *.obj
 *.elf
 
 # Precompiled Headers
 *.gch
-*.pch
 
 # Libraries
 *.lib
@@ -14,16 +12,23 @@
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
-*.dll
+# Shared objects
 *.so
 *.so.*
-*.dylib
 
 # Executables
 *.exe
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+
+Makefile
+config.log
+config.status
+firejail-profile.5
+firejail.1
+firemon.1
+src/firejail/Makefile
+src/firejail/firejail
+src/firemon/Makefile
+src/firemon/firemon
+src/lib/Makefile
+src/libtrace/Makefile
